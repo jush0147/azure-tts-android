@@ -55,7 +55,7 @@ class AzureTtsService : TextToSpeechService() {
                     speechConfig?.setSpeechSynthesisOutputFormat(
                         SpeechSynthesisOutputFormat.Raw24Khz16BitMonoPcm,
                     )
-                    speechConfig?.setSpeechSynthesisVoiceName(settings.voiceName)
+                    speechConfig?.speechSynthesisVoiceName = settings.voiceName
                 } else {
                     speechConfig = null
                 }
