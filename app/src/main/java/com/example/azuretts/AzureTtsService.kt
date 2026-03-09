@@ -55,7 +55,7 @@ class AzureTtsService : TextToSpeechService() {
                     speechConfig?.setSpeechSynthesisOutputFormat(
                         SpeechSynthesisOutputFormat.Raw24Khz16BitMonoPcm,
                     )
-                    speechConfig?.speechSynthesisVoiceName = settings.voiceName
+                    speechConfig?.setSpeechSynthesisVoiceName(settings.voiceName)
                 } else {
                     speechConfig = null
                 }
@@ -84,7 +84,14 @@ class AzureTtsService : TextToSpeechService() {
     }
 
     override fun onStop() {
-        currentSynthesizer?.stopSpeakingAsync()
+        currentSynthesizer?.let { synthesizer ->
+            runCatching {
+                val method = synthesizer.javaClass.methods.firstOrNull {
+                    it.name == "stopSpeakingAsync" && it.parameterCount == 0
+                }
+                method?.invoke(synthesizer)
+            }
+        }
         currentSynthesisJob?.cancel()
     }
 
