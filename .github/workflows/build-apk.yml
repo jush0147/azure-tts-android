@@ -24,9 +24,15 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -34,10 +40,10 @@ jobs:
           gradle-version: 8.7
 
       - name: Build debug APK
-        run: gradle :app:assembleDebug
+        run: gradle --no-daemon --stacktrace :app:assembleDebug
 
       - name: Build release APK (unsigned)
-        run: gradle :app:assembleRelease
+        run: gradle --no-daemon --stacktrace :app:assembleRelease
 
       - name: Decode release keystore (if secrets configured)
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
@@ -49,7 +55,7 @@ jobs:
       - name: Build signed release APK (if secrets configured)
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
         run: |
-          gradle :app:assembleRelease \
+          gradle --no-daemon --stacktrace :app:assembleRelease \
             -Pandroid.injected.signing.store.file=$PWD/release.keystore \
             -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
