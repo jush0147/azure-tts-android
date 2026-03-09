@@ -45,21 +45,36 @@ jobs:
       - name: Build release APK (unsigned)
         run: gradle --no-daemon --stacktrace :app:assembleRelease
 
-      - name: Decode release keystore (if secrets configured)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
+      - name: Decode release keystore (optional)
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore
+            echo "SIGNING_READY=true" >> "$GITHUB_ENV"
+          else
+            echo "Signing secrets not configured. Skipping signed release build."
+            echo "SIGNING_READY=false" >> "$GITHUB_ENV"
+          fi
 
-      - name: Build signed release APK (if secrets configured)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
+      - name: Build signed release APK (optional)
+        env:
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          gradle --no-daemon --stacktrace :app:assembleRelease \
-            -Pandroid.injected.signing.store.file=$PWD/release.keystore \
-            -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
-            -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
-            -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
+          if [ "$SIGNING_READY" = "true" ]; then
+            gradle --no-daemon --stacktrace :app:assembleRelease \
+              -Pandroid.injected.signing.store.file=$PWD/release.keystore \
+              -Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD \
+              -Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS \
+              -Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD
+          else
+            echo "Skipping signed release APK build."
+          fi
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
@@ -75,10 +90,9 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
           if-no-files-found: error
 
-      - name: Upload release APK artifact (signed)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' && secrets.ANDROID_KEY_PASSWORD != '' }}
+      - name: Upload release APK artifact (signed, optional)
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk-signed
           path: app/build/outputs/apk/release/app-release.apk
-          if-no-files-found: error
+          if-no-files-found: ignore
