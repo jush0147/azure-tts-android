@@ -8,11 +8,14 @@ This repository includes GitHub Actions workflow `.github/workflows/build-apk.ym
 
 - Trigger manually from **Actions → Build Android APK → Run workflow**.
 - Or trigger automatically on push / pull request.
-- Download artifact `app-debug-apk` from the workflow run.
-- Install on phone:
+- Download artifacts from workflow run:
+  - `app-debug-apk` (debug build)
+  - `app-release-unsigned-apk` (release build, unsigned)
+
+Install debug APK on phone:
 
 ```bash
 adb install -r app-debug.apk
 ```
 
-> Note: this is a debug APK intended for testing.
+> Release APK from CI is unsigned by default and must be signed before normal installation/distribution.
