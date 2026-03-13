@@ -99,7 +99,7 @@ class AzureTtsService : TextToSpeechService() {
     }
 
     override fun onStop() {
-        currentSynthesizer?.stopSpeakingAsync()
+        currentSynthesizer?.StopSpeakingAsync()
         currentSynthesisJob?.cancel()
     }
 
@@ -145,7 +145,7 @@ class AzureTtsService : TextToSpeechService() {
                       </voice>
                     </speak>
                 """.trimIndent()
-                speakFuture = localSynthesizer.speakSsmlAsync(ssml)
+                speakFuture = localSynthesizer.SpeakSsmlAsync(ssml)
 
                 callback.start(24000, AudioFormat.ENCODING_PCM_16BIT, 1)
 
