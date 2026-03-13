@@ -9,8 +9,8 @@ This repository includes GitHub Actions workflow `.github/workflows/build-apk.ym
 - Trigger manually from **Actions → Build Android APK → Run workflow**.
 - Or trigger automatically on push / pull request.
 - Download artifacts from workflow run:
-  - `app-debug-apk` (debug build)
-  - `app-release-unsigned-apk` (release build, unsigned)
+  - `app-debug-apk` (debug build, always required)
+  - `app-release-unsigned-apk` (release build, optional / non-blocking)
 
 Install debug APK on phone:
 

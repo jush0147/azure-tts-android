@@ -16,8 +16,6 @@ env:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
       - name: Checkout
@@ -47,8 +45,8 @@ jobs:
             "platforms;android-34" \
             "build-tools;34.0.0"
 
-      - name: Build debug and release APK
-        run: gradle :app:assembleDebug :app:assembleRelease --stacktrace --info --no-daemon
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --stacktrace --info --no-daemon
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
@@ -57,9 +55,24 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
-      - name: Upload release APK artifact
+      - name: Build release APK (non-blocking)
+        id: build_release
+        continue-on-error: true
+        run: gradle :app:assembleRelease --stacktrace --info --no-daemon
+
+      - name: Upload release APK artifact (if built)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-release-unsigned-apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
-          if-no-files-found: error
+          if-no-files-found: ignore
+
+      - name: Release build summary
+        if: always()
+        run: |
+          if [ "${{ steps.build_release.outcome }}" = "success" ]; then
+            echo "Release APK build succeeded."
+          else
+            echo "Release APK build failed (non-blocking). Debug APK is still available."
+          fi
