@@ -3,11 +3,12 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
-      - work
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -64,7 +65,7 @@ jobs:
           {
             echo "## Debug build failed"
             echo
-            echo "Last 200 lines from \\`gradle-build-debug.log\\`:"
+            echo "Last 200 lines from \`gradle-build-debug.log\`:"
             echo
             echo '```text'
             tail -n 200 gradle-build-debug.log || true
