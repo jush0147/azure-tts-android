@@ -19,3 +19,6 @@ adb install -r app-debug.apk
 ```
 
 > Release APK from CI is unsigned by default and must be signed before normal installation/distribution.
+
+
+If CI build fails, download artifact `gradle-build-logs` to inspect full Gradle output.

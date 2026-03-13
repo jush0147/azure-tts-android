@@ -45,20 +45,27 @@ jobs:
             "platforms;android-34" \
             "build-tools;34.0.0"
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace --info --no-daemon
+      - name: Build debug APK (capture full log)
+        id: build_debug
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug --stacktrace --info --warning-mode all --no-daemon 2>&1 | tee gradle-build-debug.log
 
-      - name: Upload debug APK artifact
+      - name: Upload debug APK artifact (if built)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+          if-no-files-found: ignore
 
       - name: Build release APK (non-blocking)
         id: build_release
         continue-on-error: true
-        run: gradle :app:assembleRelease --stacktrace --info --no-daemon
+        run: |
+          set -o pipefail
+          gradle :app:assembleRelease --stacktrace --info --warning-mode all --no-daemon 2>&1 | tee gradle-build-release.log
 
       - name: Upload release APK artifact (if built)
         if: always()
@@ -68,11 +75,27 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
           if-no-files-found: ignore
 
+      - name: Upload Gradle logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-logs
+          path: |
+            gradle-build-debug.log
+            gradle-build-release.log
+          if-no-files-found: warn
+
+      - name: Fail workflow if debug build failed
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          echo "Debug APK build failed. See artifact 'gradle-build-logs' for full diagnostics."
+          exit 1
+
       - name: Release build summary
         if: always()
         run: |
           if [ "${{ steps.build_release.outcome }}" = "success" ]; then
             echo "Release APK build succeeded."
           else
-            echo "Release APK build failed (non-blocking). Debug APK is still available."
+            echo "Release APK build failed (non-blocking). Debug APK remains the required signal."
           fi
