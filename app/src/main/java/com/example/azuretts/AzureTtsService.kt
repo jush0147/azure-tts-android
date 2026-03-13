@@ -21,6 +21,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Future
 
 class AzureTtsService : TextToSpeechService() {
@@ -90,12 +91,14 @@ class AzureTtsService : TextToSpeechService() {
     }
 
     override fun onStop() {
-        // Implemented in later phases.
+        currentSynthesizer?.stopSpeakingAsync()
+        currentSynthesisJob?.cancel()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceScope.cancel()
+        serviceJob.cancel()
+        runBlocking { serviceJob.join() }
         speechConfig?.close()
         speechConfig = null
     }
