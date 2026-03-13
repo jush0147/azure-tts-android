@@ -22,3 +22,6 @@ adb install -r app-debug.apk
 
 
 If CI build fails, download artifact `gradle-build-logs` to inspect full Gradle output.
+
+
+Build note: Azure Speech SDK dependency is resolved from `https://csspeechstorage.blob.core.windows.net/maven/` (configured in `settings.gradle.kts`).

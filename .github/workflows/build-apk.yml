@@ -16,24 +16,35 @@ env:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "false"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           gradle-version: 8.7
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
@@ -55,6 +66,8 @@ jobs:
       - name: Upload debug APK artifact (if built)
         if: always()
         uses: actions/upload-artifact@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
@@ -70,6 +83,8 @@ jobs:
       - name: Upload release APK artifact (if built)
         if: always()
         uses: actions/upload-artifact@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: app-release-unsigned-apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
@@ -78,6 +93,8 @@ jobs:
       - name: Upload Gradle logs
         if: always()
         uses: actions/upload-artifact@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: gradle-build-logs
           path: |
