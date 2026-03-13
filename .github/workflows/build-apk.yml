@@ -1,0 +1,165 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "false"
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Install required Android SDK packages
+        run: |
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
+
+      - name: Build debug APK (capture full log)
+        id: build_debug
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug --stacktrace --info --warning-mode all --no-daemon 2>&1 | tee gradle-build-debug.log
+
+      - name: Show debug failure excerpt in logs
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          echo "===== Debug build key errors (error:/e:) ====="
+          grep -E "(^e: | error: )" gradle-build-debug.log | tail -n 120 || true
+          echo "===== Debug build failure excerpt (last 200 lines) ====="
+          tail -n 200 gradle-build-debug.log || true
+
+      - name: Write debug failure excerpt to step summary
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          {
+            echo "## Debug build failed"
+            echo
+            echo "### Key compiler/resource errors"
+            echo
+            echo '```text'
+            grep -E "(^e: | error: )" gradle-build-debug.log | tail -n 120 || true
+            echo '```'
+            echo
+            echo "### Last 200 lines from \`gradle-build-debug.log\`"
+            echo
+            echo '```text'
+            tail -n 200 gradle-build-debug.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload debug APK artifact (if built)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: ignore
+
+      - name: Build release APK (non-blocking, only if debug passed)
+        id: build_release
+        if: steps.build_debug.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          gradle :app:assembleRelease --stacktrace --info --warning-mode all --no-daemon 2>&1 | tee gradle-build-release.log
+
+      - name: Upload release APK artifact (if built)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-unsigned-apk
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: ignore
+
+      - name: Sign release APK with CI debug keystore (installable)
+        if: steps.build_release.outcome == 'success'
+        run: |
+          keytool -genkeypair \
+            -keystore ci-debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+          zipalign -f -p 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+
+          apksigner sign \
+            --ks ci-debug.keystore \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out app/build/outputs/apk/release/app-release-signed.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Upload installable release APK artifact (signed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-debug-signed-apk
+          path: app/build/outputs/apk/release/app-release-signed.apk
+          if-no-files-found: ignore
+
+      - name: Upload Gradle logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-logs
+          path: |
+            gradle-build-debug.log
+            gradle-build-release.log
+          if-no-files-found: warn
+
+      - name: Fail workflow if debug build failed
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          echo "Debug APK build failed. Failure excerpt already printed above and added to Step Summary."
+          exit 1
+
+      - name: Release build summary
+        if: always()
+        run: |
+          if [ "${{ steps.build_release.outcome }}" = "success" ]; then
+            echo "Release APK build succeeded."
+          elif [ "${{ steps.build_debug.outcome }}" != "success" ]; then
+            echo "Release build skipped because debug build failed."
+          else
+            echo "Release APK build failed (non-blocking)."
+          fi
