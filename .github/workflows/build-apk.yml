@@ -104,6 +104,39 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
           if-no-files-found: ignore
 
+      - name: Sign release APK with CI debug keystore (installable)
+        if: steps.build_release.outcome == 'success'
+        run: |
+          keytool -genkeypair \
+            -keystore ci-debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+          zipalign -f -p 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+
+          apksigner sign \
+            --ks ci-debug.keystore \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out app/build/outputs/apk/release/app-release-signed.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Upload installable release APK artifact (signed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-debug-signed-apk
+          path: app/build/outputs/apk/release/app-release-signed.apk
+          if-no-files-found: ignore
+
       - name: Upload Gradle logs
         if: always()
         uses: actions/upload-artifact@v4
