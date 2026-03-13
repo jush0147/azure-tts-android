@@ -40,6 +40,9 @@ class AzureTtsService : TextToSpeechService() {
     @Volatile
     private var speakingRate: Float = 1.0f
 
+    @Volatile
+    private var selectedVoice: String = "zh-TW-HsiaoChenNeural"
+
     private val supportedLanguages = setOf(
         Triple("zh", "TW", ""),
         Triple("en", "US", "")
@@ -52,6 +55,7 @@ class AzureTtsService : TextToSpeechService() {
             settingsStore.settingsFlow.collect { settings ->
                 val old = speechConfig
                 speakingRate = settings.speakingRate
+                selectedVoice = settings.voice
 
                 if (settings.apiKey.isNotBlank() && settings.region.isNotBlank()) {
                     val newConfig = SpeechConfig.fromSubscription(settings.apiKey, settings.region)
@@ -135,7 +139,7 @@ class AzureTtsService : TextToSpeechService() {
                 val ratePercent = ((speakingRate - 1.0f) * 100.0f).toInt()
                 val ssml = """
                     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
-                      <voice name="${config.speechSynthesisVoiceName}">
+                      <voice name="$selectedVoice">
                         <prosody rate="${if (ratePercent >= 0) "+$ratePercent" else "$ratePercent"}%">${escapeForSsml(text)}</prosody>
                       </voice>
                     </speak>

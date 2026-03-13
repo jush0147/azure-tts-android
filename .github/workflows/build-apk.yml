@@ -11,10 +11,13 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "false"
 
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
       - name: Checkout
@@ -45,7 +48,7 @@ jobs:
             "build-tools;34.0.0"
 
       - name: Build debug and release APK
-        run: gradle :app:assembleDebug :app:assembleRelease --stacktrace --no-daemon
+        run: gradle :app:assembleDebug :app:assembleRelease --stacktrace --info --no-daemon
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
