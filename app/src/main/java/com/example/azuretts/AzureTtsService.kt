@@ -5,6 +5,7 @@ import android.speech.tts.SynthesisCallback
 import android.speech.tts.SynthesisRequest
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeechService
+import android.speech.tts.Voice
 import android.util.Log
 import java.util.Locale
 import com.microsoft.cognitiveservices.speech.SpeechConfig
@@ -45,6 +46,25 @@ class AzureTtsService : TextToSpeechService() {
     @Volatile
     private var selectedVoice: String = "zh-TW-HsiaoChenNeural"
 
+
+    private val supportedLocales = listOf(
+        Locale("zh", "TW"),
+        Locale("en", "US"),
+        Locale("ko", "KR")
+    )
+
+    private val staticVoices: List<Voice> by lazy {
+        supportedLocales.map { locale ->
+            Voice(
+                "${locale.toLanguageTag()}-default",
+                locale,
+                Voice.QUALITY_NORMAL,
+                Voice.LATENCY_NORMAL,
+                false,
+                emptySet()
+            )
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -88,6 +108,26 @@ class AzureTtsService : TextToSpeechService() {
 
     override fun onLoadLanguage(lang: String?, country: String?, variant: String?): Int {
         return onIsLanguageAvailable(lang, country, variant)
+    }
+
+    override fun onGetVoices(): MutableList<Voice> {
+        return staticVoices.toMutableList()
+    }
+
+    override fun onGetDefaultVoiceNameFor(lang: String?, country: String?, variant: String?): String? {
+        if (onIsLanguageAvailable(lang, country, variant) < TextToSpeech.LANG_AVAILABLE) return null
+        val locale = Locale(lang.orEmpty(), country.orEmpty())
+        return staticVoices.firstOrNull { it.locale.language == locale.language }?.name
+            ?: staticVoices.firstOrNull()?.name
+    }
+
+    override fun onIsValidVoiceName(voiceName: String?): Int {
+        if (voiceName.isNullOrBlank()) return TextToSpeech.ERROR
+        return if (staticVoices.any { it.name == voiceName }) TextToSpeech.SUCCESS else TextToSpeech.ERROR
+    }
+
+    override fun onLoadVoice(voiceName: String?): Int {
+        return onIsValidVoiceName(voiceName)
     }
 
     override fun onStop() {
