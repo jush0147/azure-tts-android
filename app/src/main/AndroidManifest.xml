@@ -23,7 +23,7 @@
             android:exported="true"
             android:label="Azure TTS"
             android:directBootAware="true"
-            android:permission="android.permission.BIND_TEXT_SERVICE">
+            android:permission="android.permission.BIND_TEXT_TO_SPEECH_SERVICE">
             <intent-filter>
                 <action android:name="android.intent.action.TTS_SERVICE" />
             </intent-filter>

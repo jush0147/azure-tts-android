@@ -38,3 +38,6 @@ adb shell cmd package query-intent-services -a android.intent.action.TTS_SERVICE
 adb shell pm list packages | grep azuretts
 adb logcat -d | grep -i -e TextToSpeech -e tts -e AzureTTS
 ```
+
+TTS manifest checklist:
+- Service permission should be `android.permission.BIND_TEXT_TO_SPEECH_SERVICE` and action `android.intent.action.TTS_SERVICE`.
