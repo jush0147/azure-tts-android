@@ -6,6 +6,7 @@ import android.speech.tts.SynthesisRequest
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeechService
 import android.util.Log
+import java.util.Locale
 import com.microsoft.cognitiveservices.speech.SpeechConfig
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisOutputFormat
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult
@@ -44,10 +45,6 @@ class AzureTtsService : TextToSpeechService() {
     @Volatile
     private var selectedVoice: String = "zh-TW-HsiaoChenNeural"
 
-    private val supportedLanguages = setOf(
-        Triple("zh", "TW", ""),
-        Triple("en", "US", "")
-    )
 
     override fun onCreate() {
         super.onCreate()
@@ -75,23 +72,18 @@ class AzureTtsService : TextToSpeechService() {
     }
 
     override fun onGetLanguage(): Array<String> {
-        return arrayOf("zh", "TW", "")
+        val locale = Locale.getDefault()
+        return arrayOf(locale.language.orEmpty(), locale.country.orEmpty(), "")
     }
 
     override fun onIsLanguageAvailable(lang: String?, country: String?, variant: String?): Int {
-        if (lang == null) return TextToSpeech.LANG_NOT_SUPPORTED
+        if (lang.isNullOrBlank()) return TextToSpeech.LANG_NOT_SUPPORTED
 
-        val exactMatch = Triple(lang, country ?: "", variant ?: "")
-        if (exactMatch in supportedLanguages) {
-            return when {
-                !variant.isNullOrBlank() -> TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE
-                !country.isNullOrBlank() -> TextToSpeech.LANG_COUNTRY_AVAILABLE
-                else -> TextToSpeech.LANG_AVAILABLE
-            }
+        return when {
+            !variant.isNullOrBlank() -> TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE
+            !country.isNullOrBlank() -> TextToSpeech.LANG_COUNTRY_AVAILABLE
+            else -> TextToSpeech.LANG_AVAILABLE
         }
-
-        val languageOnlyMatch = supportedLanguages.any { it.first == lang }
-        return if (languageOnlyMatch) TextToSpeech.LANG_AVAILABLE else TextToSpeech.LANG_NOT_SUPPORTED
     }
 
     override fun onLoadLanguage(lang: String?, country: String?, variant: String?): Int {
