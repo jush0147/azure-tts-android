@@ -1,0 +1,186 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.tts"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/app/app/src/main/AndroidManifest.xml:5:5-67
+11-->/app/app/src/main/AndroidManifest.xml:5:22-64
+12
+13    <permission
+13-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+14        android:name="com.example.tts.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+14-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+15        android:protectionLevel="signature" />
+15-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+16
+17    <uses-permission android:name="com.example.tts.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+17-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+17-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+18    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+18-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:11:5-71
+18-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:11:22-68
+19
+20    <application
+20-->/app/app/src/main/AndroidManifest.xml:7:5-40:19
+21        android:allowBackup="true"
+21-->/app/app/src/main/AndroidManifest.xml:8:9-35
+22        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+22-->[androidx.core:core:1.12.0] /home/jules/.gradle/caches/8.8/transforms/1604b80d1410af7bcc26c224d27ef86d/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+23        android:debuggable="true"
+24        android:extractNativeLibs="false"
+25        android:icon="@mipmap/ic_launcher"
+25-->/app/app/src/main/AndroidManifest.xml:9:9-43
+26        android:label="Azure TTS"
+26-->/app/app/src/main/AndroidManifest.xml:10:9-34
+27        android:roundIcon="@mipmap/ic_launcher_round"
+27-->/app/app/src/main/AndroidManifest.xml:11:9-54
+28        android:supportsRtl="true"
+28-->/app/app/src/main/AndroidManifest.xml:12:9-35
+29        android:theme="@style/Theme.AzureTts" >
+29-->/app/app/src/main/AndroidManifest.xml:13:9-46
+30        <service
+30-->/app/app/src/main/AndroidManifest.xml:15:9-27:19
+31            android:name="com.example.tts.AzureTtsService"
+31-->/app/app/src/main/AndroidManifest.xml:16:13-44
+32            android:exported="true"
+32-->/app/app/src/main/AndroidManifest.xml:17:13-36
+33            android:label="Azure TTS Engine"
+33-->/app/app/src/main/AndroidManifest.xml:18:13-45
+34            android:permission="android.permission.BIND_TEXT_TO_SPEECH" >
+34-->/app/app/src/main/AndroidManifest.xml:19:13-72
+35            <intent-filter>
+35-->/app/app/src/main/AndroidManifest.xml:20:13-23:29
+36                <action android:name="android.intent.action.TTS_SERVICE" />
+36-->/app/app/src/main/AndroidManifest.xml:21:17-76
+36-->/app/app/src/main/AndroidManifest.xml:21:25-73
+37
+38                <category android:name="android.intent.category.DEFAULT" />
+38-->/app/app/src/main/AndroidManifest.xml:22:17-76
+38-->/app/app/src/main/AndroidManifest.xml:22:27-73
+39            </intent-filter>
+40
+41            <meta-data
+41-->/app/app/src/main/AndroidManifest.xml:24:13-26:54
+42                android:name="android.speech.tts"
+42-->/app/app/src/main/AndroidManifest.xml:25:17-50
+43                android:resource="@xml/tts_engine" />
+43-->/app/app/src/main/AndroidManifest.xml:26:17-51
+44        </service>
+45
+46        <activity
+46-->/app/app/src/main/AndroidManifest.xml:29:9-38:20
+47            android:name="com.example.tts.SettingsActivity"
+47-->/app/app/src/main/AndroidManifest.xml:30:13-45
+48            android:exported="true"
+48-->/app/app/src/main/AndroidManifest.xml:31:13-36
+49            android:label="Azure TTS Settings"
+49-->/app/app/src/main/AndroidManifest.xml:32:13-47
+50            android:theme="@style/Theme.AzureTts" >
+50-->/app/app/src/main/AndroidManifest.xml:33:13-50
+51            <intent-filter>
+51-->/app/app/src/main/AndroidManifest.xml:34:13-37:29
+52                <action android:name="android.intent.action.MAIN" />
+52-->/app/app/src/main/AndroidManifest.xml:35:17-69
+52-->/app/app/src/main/AndroidManifest.xml:35:25-66
+53
+54                <category android:name="android.intent.category.LAUNCHER" />
+54-->/app/app/src/main/AndroidManifest.xml:36:17-77
+54-->/app/app/src/main/AndroidManifest.xml:36:27-74
+55            </intent-filter>
+56        </activity>
+57        <activity
+57-->[androidx.compose.ui:ui-tooling-android:1.6.1] /home/jules/.gradle/caches/8.8/transforms/65978b3b2bf68943cf07bf9b96e01491/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+58            android:name="androidx.compose.ui.tooling.PreviewActivity"
+58-->[androidx.compose.ui:ui-tooling-android:1.6.1] /home/jules/.gradle/caches/8.8/transforms/65978b3b2bf68943cf07bf9b96e01491/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+59            android:exported="true" />
+59-->[androidx.compose.ui:ui-tooling-android:1.6.1] /home/jules/.gradle/caches/8.8/transforms/65978b3b2bf68943cf07bf9b96e01491/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+60        <activity
+60-->[androidx.compose.ui:ui-test-manifest:1.6.1] /home/jules/.gradle/caches/8.8/transforms/ee56f33db53f854724fe8493f63cec20/transformed/ui-test-manifest-1.6.1/AndroidManifest.xml:23:9-25:39
+61            android:name="androidx.activity.ComponentActivity"
+61-->[androidx.compose.ui:ui-test-manifest:1.6.1] /home/jules/.gradle/caches/8.8/transforms/ee56f33db53f854724fe8493f63cec20/transformed/ui-test-manifest-1.6.1/AndroidManifest.xml:24:13-63
+62            android:exported="true" />
+62-->[androidx.compose.ui:ui-test-manifest:1.6.1] /home/jules/.gradle/caches/8.8/transforms/ee56f33db53f854724fe8493f63cec20/transformed/ui-test-manifest-1.6.1/AndroidManifest.xml:25:13-36
+63
+64        <provider
+64-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+65            android:name="androidx.startup.InitializationProvider"
+65-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+66            android:authorities="com.example.tts.androidx-startup"
+66-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+67            android:exported="false" >
+67-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+68            <meta-data
+68-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+69                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+69-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+70                android:value="androidx.startup" />
+70-->[androidx.emoji2:emoji2:1.3.0] /home/jules/.gradle/caches/8.8/transforms/2a5560c0fc92e09c24f65aacc3f6f5b8/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+71            <meta-data
+71-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/jules/.gradle/caches/8.8/transforms/3121b1fc3138cf7960306ca61a18b5e7/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+72                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+72-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/jules/.gradle/caches/8.8/transforms/3121b1fc3138cf7960306ca61a18b5e7/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+73                android:value="androidx.startup" />
+73-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/jules/.gradle/caches/8.8/transforms/3121b1fc3138cf7960306ca61a18b5e7/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+74            <meta-data
+74-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+75                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+76                android:value="androidx.startup" />
+76-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+77        </provider>
+78
+79        <receiver
+79-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+80            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+81            android:directBootAware="false"
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+82            android:enabled="true"
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+83            android:exported="true"
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+84            android:permission="android.permission.DUMP" >
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+85            <intent-filter>
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+86                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+87            </intent-filter>
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+89                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+92                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+93            </intent-filter>
+94            <intent-filter>
+94-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+95                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/jules/.gradle/caches/8.8/transforms/fceace2938428f8a44f6bf661dae1453/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+96            </intent-filter>
+97        </receiver>
+98
+99        <provider
+99-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:15:9-18:40
+100            android:name="com.microsoft.cognitiveservices.speech.util.InternalContentProvider"
+100-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:17:13-57
+101            android:authorities="com.microsoft.cognitiveservices.speech.util.InternalContentProvider"
+101-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:16:13-102
+102            android:exported="false" />
+102-->[com.microsoft.cognitiveservices.speech:client-sdk:1.37.0] /home/jules/.gradle/caches/8.8/transforms/b498499c8ee5e4f3e23396ad90161704/transformed/client-sdk-1.37.0/AndroidManifest.xml:18:13-37
+103    </application>
+104
+105</manifest>
