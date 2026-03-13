@@ -27,3 +27,5 @@ CI also prints the last 200 lines of the debug Gradle log directly in the workfl
 
 
 Build note: Azure Speech SDK dependency is resolved from `https://csspeechstorage.blob.core.windows.net/maven/` (configured in `settings.gradle.kts`).
+
+CI failure summary includes key `error:` / `e:` compiler lines plus the last 200 log lines.

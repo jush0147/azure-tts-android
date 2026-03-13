@@ -56,6 +56,8 @@ jobs:
       - name: Show debug failure excerpt in logs
         if: steps.build_debug.outcome != 'success'
         run: |
+          echo "===== Debug build key errors (error:/e:) ====="
+          grep -E "(^e: | error: )" gradle-build-debug.log | tail -n 120 || true
           echo "===== Debug build failure excerpt (last 200 lines) ====="
           tail -n 200 gradle-build-debug.log || true
 
@@ -65,7 +67,13 @@ jobs:
           {
             echo "## Debug build failed"
             echo
-            echo "Last 200 lines from \`gradle-build-debug.log\`:"
+            echo "### Key compiler/resource errors"
+            echo
+            echo '```text'
+            grep -E "(^e: | error: )" gradle-build-debug.log | tail -n 120 || true
+            echo '```'
+            echo
+            echo "### Last 200 lines from \`gradle-build-debug.log\`"
             echo
             echo '```text'
             tail -n 200 gradle-build-debug.log || true

@@ -11,6 +11,7 @@ import com.microsoft.cognitiveservices.speech.SpeechSynthesisOutputFormat
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
+import com.microsoft.cognitiveservices.speech.audio.AudioOutputStream
 import com.microsoft.cognitiveservices.speech.audio.PullAudioOutputStream
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -130,7 +131,7 @@ class AzureTtsService : TextToSpeechService() {
             var audioConfig: AudioConfig? = null
 
             try {
-                pullStream = PullAudioOutputStream.create()
+                pullStream = AudioOutputStream.createPullStream()
                 audioConfig = AudioConfig.fromStreamOutput(pullStream)
                 localSynthesizer = SpeechSynthesizer(config, audioConfig)
                 currentSynthesizer = localSynthesizer
