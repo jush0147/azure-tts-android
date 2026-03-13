@@ -23,5 +23,7 @@ adb install -r app-debug.apk
 
 If CI build fails, download artifact `gradle-build-logs` to inspect full Gradle output.
 
+CI also prints the last 200 lines of the debug Gradle log directly in the workflow UI (Step Summary), so you can read key errors without downloading artifacts.
+
 
 Build note: Azure Speech SDK dependency is resolved from `https://csspeechstorage.blob.core.windows.net/maven/` (configured in `settings.gradle.kts`).

@@ -16,35 +16,24 @@ env:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "false"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           gradle-version: 8.7
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
@@ -63,18 +52,36 @@ jobs:
           set -o pipefail
           gradle :app:assembleDebug --stacktrace --info --warning-mode all --no-daemon 2>&1 | tee gradle-build-debug.log
 
+      - name: Show debug failure excerpt in logs
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          echo "===== Debug build failure excerpt (last 200 lines) ====="
+          tail -n 200 gradle-build-debug.log || true
+
+      - name: Write debug failure excerpt to step summary
+        if: steps.build_debug.outcome != 'success'
+        run: |
+          {
+            echo "## Debug build failed"
+            echo
+            echo "Last 200 lines from \\`gradle-build-debug.log\\`:"
+            echo
+            echo '```text'
+            tail -n 200 gradle-build-debug.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload debug APK artifact (if built)
         if: always()
         uses: actions/upload-artifact@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: ignore
 
-      - name: Build release APK (non-blocking)
+      - name: Build release APK (non-blocking, only if debug passed)
         id: build_release
+        if: steps.build_debug.outcome == 'success'
         continue-on-error: true
         run: |
           set -o pipefail
@@ -83,8 +90,6 @@ jobs:
       - name: Upload release APK artifact (if built)
         if: always()
         uses: actions/upload-artifact@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: app-release-unsigned-apk
           path: app/build/outputs/apk/release/app-release-unsigned.apk
@@ -93,8 +98,6 @@ jobs:
       - name: Upload Gradle logs
         if: always()
         uses: actions/upload-artifact@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           name: gradle-build-logs
           path: |
@@ -105,7 +108,7 @@ jobs:
       - name: Fail workflow if debug build failed
         if: steps.build_debug.outcome != 'success'
         run: |
-          echo "Debug APK build failed. See artifact 'gradle-build-logs' for full diagnostics."
+          echo "Debug APK build failed. Failure excerpt already printed above and added to Step Summary."
           exit 1
 
       - name: Release build summary
@@ -113,6 +116,8 @@ jobs:
         run: |
           if [ "${{ steps.build_release.outcome }}" = "success" ]; then
             echo "Release APK build succeeded."
+          elif [ "${{ steps.build_debug.outcome }}" != "success" ]; then
+            echo "Release build skipped because debug build failed."
           else
-            echo "Release APK build failed (non-blocking). Debug APK remains the required signal."
+            echo "Release APK build failed (non-blocking)."
           fi
